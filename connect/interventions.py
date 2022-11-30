@@ -9,6 +9,7 @@ from __future__ import annotations
 import enum
 import logging
 import pathlib
+import datetime as dt
 
 # Third party imports
 import geopandas as gpd
@@ -53,6 +54,8 @@ def route_interventions(file: pathlib.Path, layer: str) -> dict[SimpleMode, gpd.
 
     return mode_interventions
 
+def seconds_since_midnight(time: dt.time) -> int:
+    return time.hour * 3600 + time.minute * 60 + time.second
 
 def request_simple_interventions(geometries: gpd.GeoDataFrame, mode: SimpleMode):
     payload = {
@@ -62,9 +65,11 @@ def request_simple_interventions(geometries: gpd.GeoDataFrame, mode: SimpleMode)
         "return_home": False,
         "max_travel_time": 3600,
         "geography_level": "lsoa",
+        "arrival_times": (seconds_since_midnight(dt.time(8)),),
+        "departure_times": (seconds_since_midnight(dt.time(8)),),
     }
 
-    res = requests.post(PT_URL, data=payload)
+    res = requests.post(PT_URL, json=payload)
     print(res.text)
 
 if __name__ == "__main__":
