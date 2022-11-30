@@ -5,16 +5,20 @@
 
 ##### IMPORTS #####
 # Standard imports
+import datetime as dt
 import logging
+import pprint
 
 # Third party imports
 from bokeh import tile_providers, models, plotting, palettes, layouts
-from random import random
+import requests
+import pyproj
 
 # Local imports
 
 ##### CONSTANTS #####
 LOG = logging.getLogger(__name__)
+AC_URL = "https://dirty-sloths-guess-34-89-73-233.loca.lt/"
 
 ##### CLASSES #####
 class TestDashboard:
@@ -77,7 +81,32 @@ class DrawDashboard():
         plotting.curdoc().add_root(layouts.column(but, p, dt))
 
     def button_click(self):        
-        print(f"Data is:\n{self.source.to_df()}")
+        df = self.source.to_df()
+
+        t = pyproj.Transformer.from_crs("epsg:3857", "epsg:4326")
+        lat_long = []
+        for _, row in df.iterrows():
+            xy = t.transform(row["xs"], row["ys"])
+            print(xy)
+            lat_long.append(list(zip(*xy))) 
+        
+        payload = {
+            "lat_long_pairs": lat_long,
+            "mode_simpler": "walk",
+            "TripStartHours": 8,
+            "return_home": False,
+            "max_travel_time": 3600,
+            "geography_level": "lsoa",
+            "arrival_times": (seconds_since_midnight(dt.time(8)),),
+            "departure_times": (seconds_since_midnight(dt.time(8)),),
+        }
+        pprint.pp(payload)
+
+        res = requests.post(AC_URL, json=payload, verify=False)
+        print(res.json())
+
+def seconds_since_midnight(time: dt.time) -> int:
+    return time.hour * 3600 + time.minute * 60 + time.second
 
 
 DrawDashboard()

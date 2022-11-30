@@ -10,6 +10,7 @@ import enum
 import logging
 import pathlib
 import datetime as dt
+import pprint
 
 # Third party imports
 import geopandas as gpd
@@ -41,7 +42,9 @@ class SimpleMode(enum.Enum):
 
 
 ##### FUNCTIONS #####
-def route_interventions(file: pathlib.Path, layer: str) -> dict[SimpleMode, gpd.GeoDataFrame]:
+def route_interventions(
+    file: pathlib.Path, layer: str
+) -> dict[SimpleMode, gpd.GeoDataFrame]:
     interventions = gpd.read_file(file, layer=layer)
     interventions = interventions.loc[:, ["link_name", "mode", "geometry"]]
 
@@ -55,12 +58,16 @@ def route_interventions(file: pathlib.Path, layer: str) -> dict[SimpleMode, gpd.
 
     return mode_interventions
 
+
 def seconds_since_midnight(time: dt.time) -> int:
     return time.hour * 3600 + time.minute * 60 + time.second
 
+
 def request_simple_interventions(geometries: gpd.GeoDataFrame, mode: SimpleMode):
     payload = {
-        "lat_long_pairs": geometries.geometry.apply(lambda x: list(x.coords)).tolist(),
+        "lat_long_pairs": geometries.geometry.apply(
+            lambda l: [(x, y) for y, x in l.coords]
+        ).tolist(),
         "mode_simpler": mode.value,
         "TripStartHours": 8,
         "return_home": False,
@@ -70,11 +77,15 @@ def request_simple_interventions(geometries: gpd.GeoDataFrame, mode: SimpleMode)
         "departure_times": (seconds_since_midnight(dt.time(8)),),
     }
 
-    res = requests.post(AC_URL, json=payload)
-    print(res.text)
+    res = requests.post(AC_URL, json=payload, verify=False)
+    return res.json()
+
 
 if __name__ == "__main__":
-    routes = route_interventions(r"C:\Users\Genie\Documents\pta_hackathon\mersey_bridge.gpkg", "mersey_bridge")
+    routes = route_interventions(
+        r"C:\Users\UKMJB018\OneDrive - WSP O365\Projects\DfT Connectivity Hackathon\mersey_bridge.gpkg",
+        "mersey_bridge",
+    )
 
     for m, geoms in routes.items():
         request_simple_interventions(geoms, m)
