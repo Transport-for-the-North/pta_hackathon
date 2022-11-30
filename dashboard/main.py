@@ -13,10 +13,16 @@ import pprint
 from bokeh import tile_providers, models, plotting, palettes, layouts
 import requests
 import pyproj
+import pandas as pd
+import geopandas as gpd
 
 # Local imports
 
 ##### CONSTANTS #####
+
+lsoas_shp = '/path/to/file.shp'
+map_html = '/path/to/map.html'
+
 LOG = logging.getLogger(__name__)
 AC_URL = "https://dirty-sloths-guess-34-89-73-233.loca.lt/"
 
@@ -79,6 +85,8 @@ class DrawDashboard():
         but.on_click(self.button_click)
 
         plotting.curdoc().add_root(layouts.column(but, p, dt))
+        
+        self.boundary_shp = gpd.read_file(lsoas_shp)[['LSOA21CD', 'geometry']]
 
     def button_click(self):        
         df = self.source.to_df()
@@ -103,7 +111,20 @@ class DrawDashboard():
         pprint.pp(payload)
 
         res = requests.post(AC_URL, json=payload, verify=False)
-        print(res.json())
+        api_output = pd.DataFrame(res.json())
+        
+        
+        # Join to gdf
+        geodataframe = self.boundaries.merge(api_output, left_on='LSOA21CD', right_on='lsoa', how='inner')
+        
+        # Create map
+        m = geodataframe.explore(column='overall_diff', cmap='cividis', scheme='Quantiles', k=5)
+        
+        # export to html
+        m.save(map_html)
+        
+        
+     
 
 def seconds_since_midnight(time: dt.time) -> int:
     return time.hour * 3600 + time.minute * 60 + time.second
