@@ -22,6 +22,7 @@ import requests
 LOG = logging.getLogger(__name__)
 NETWORK_CRS = "EPSG:4326"
 PT_URL = "https://thick-humans-tap-34-89-73-233.loca.lt/"
+AC_URL = "https://dirty-sloths-guess-34-89-73-233.loca.lt/"
 
 ##### CLASSES #####
 class SimpleMode(enum.Enum):
@@ -69,11 +70,11 @@ def request_simple_interventions(geometries: gpd.GeoDataFrame, mode: SimpleMode)
         "departure_times": (seconds_since_midnight(dt.time(8)),),
     }
 
-    res = requests.post(PT_URL, json=payload)
+    res = requests.post(AC_URL, json=payload)
     print(res.text)
 
 if __name__ == "__main__":
-    routes = route_interventions(r"C:\Users\UKMJB018\OneDrive - WSP O365\Projects\DfT Connectivity Hackathon\mersey_bridge.gpkg", "mersey_bridge")
+    routes = route_interventions(r"C:\Users\Genie\Documents\pta_hackathon\mersey_bridge.gpkg", "mersey_bridge")
 
     for m, geoms in routes.items():
         request_simple_interventions(geoms, m)
