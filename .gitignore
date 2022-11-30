@@ -1,0 +1,4 @@
+.vscode
+.idea
+.mypy
+__pycache__/
