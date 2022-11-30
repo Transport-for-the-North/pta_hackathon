@@ -1,0 +1,49 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="MarkdownUnresolvedFileReference" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="2">
+            <item index="0" class="java.lang.String" itemvalue="geopandas" />
+            <item index="1" class="java.lang.String" itemvalue="pandas" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E501" />
+          <option value="W605" />
+          <option value="E402" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyProtectedMemberInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyTypeCheckerInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="path_years" />
+          <option value="report_home" />
+          <option value="export_paths" />
+          <option value="report_paths" />
+          <option value="segment_names" />
+          <option value="segments_and_names" />
+          <option value="segments" />
+          <option value="col_name" />
+          <option value="n_zones" />
+          <option value="sector_data" />
+          <option value="from_zone_col" />
+          <option value="to_zone_col" />
+          <option value="val_col" />
+          <option value="p_col" />
+          <option value="m_col" />
+          <option value="ca_col" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
